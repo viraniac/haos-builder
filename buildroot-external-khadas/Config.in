@@ -1,1 +1,2 @@
 source "$BR2_EXTERNAL_KHADAS_PATH/package/khadas-uboot/Config.in"
+source "$BR2_EXTERNAL_KHADAS_PATH/package/khadas-firmware/Config.in"

@@ -1,0 +1,4 @@
+config BR2_PACKAGE_KHADAS_FIRMWARE
+	bool "Wireless firmware for Khadas Boards"
+	help
+	  Add firmware for wireless chipsets used on Khadas Boards.
