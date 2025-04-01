@@ -1,4 +1,4 @@
-BOARD_ID=khadas-vim3
+BOARD_ID=vim3
 BOARD_NAME="Khadas VIM3"
 CHASSIS=embedded
 BOOTLOADER=uboot
