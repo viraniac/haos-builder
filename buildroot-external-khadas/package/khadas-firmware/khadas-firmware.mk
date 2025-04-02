@@ -22,6 +22,8 @@ define KHADAS_FIRMWARE_INSTALL_TARGET_CMDS
 
 	## Bluetooth firmware
 	mv $(TARGET_DIR)/lib/firmware/brcm/BCM4359C0_ap6398s.hcd $(TARGET_DIR)/lib/firmware/brcm/BCM4359C0.hcd
+	mkdir $(TARGET_DIR)/etc/systemd/system/NetworkManager.service.d
+	cp $(@D)/override.conf $(TARGET_DIR)/etc/systemd/system/NetworkManager.service.d/
 endef
 
 $(eval $(generic-package))
