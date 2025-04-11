@@ -38,14 +38,14 @@ $ scripts/enter.sh make help
 ### Get Docker image
 
 ```bash
-$ docker pull docker/dind
+$ docker pull docker:dind
 ```
 
 ### Create container instance
 
 ```bash
 $ docker run -it --name haos-builder --privileged \
-             docker/dind /bin/sh
+             docker:dind /bin/sh
 ```
 
 ### Install required packages within container instance
