@@ -409,6 +409,10 @@ define UBOOT_VENDOR_BUILD_CMDS
 			-n $(BR2_PACKAGE_UBOOT_VENDOR_FORMAT_IDBLOADER_SOC) \
 			-T rksd -d $(UBOOT_VENDOR_DDR_BLOB):$(@D)/spl/u-boot-spl.bin \
 			 $(@D)/idbloader.img)
+	$(if $(BR2_PACKAGE_UBOOT_VENDOR_GENERATE_BOOT_SCRIPT),
+		$(@D)/tools/mkimage -C none -A $(MKIMAGE_ARCH) -T script \
+			-d $(call qstrip,$(BR2_PACKAGE_UBOOT_VENDOR_BOOT_SCRIPT_SOURCE)) \
+			$(@D)/tools/boot.scr)
 endef
 
 define UBOOT_VENDOR_BUILD_OMAP_IFT
@@ -427,6 +431,8 @@ define UBOOT_VENDOR_INSTALL_IMAGES_CMDS
 			cp -dpf $(@D)/$(f) $(BINARIES_DIR)/
 		)
 	)
+	$(if $(BR2_PACKAGE_UBOOT_VENDOR_GENERATE_BOOT_SCRIPT),
+		$(INSTALL) -m 0755 -D $(@D)/tools/boot.scr $(BINARIES_DIR)/boot.scr)
 endef
 
 ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_ZYNQMP),y)

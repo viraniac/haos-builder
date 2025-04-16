@@ -466,6 +466,19 @@ config BR2_PACKAGE_UBOOT_VENDOR_FORMAT_IDBLOADER_SOC
 
 endmenu
 
+config BR2_PACKAGE_UBOOT_VENDOR_GENERATE_BOOT_SCRIPT
+	bool "Generate a U-Boot boot script"
+	help
+	  Generate a U-Boot boot script, given a file listing U-Boot
+	  commands to be executed at boot time. The generated boot
+	  script will be called 'boot.scr'.
+
+config BR2_PACKAGE_UBOOT_VENDOR_BOOT_SCRIPT_SOURCE
+	string "U-Boot boot script source"
+	depends on BR2_PACKAGE_UBOOT_VENDOR_GENERATE_BOOT_SCRIPT
+	help
+	  Source file to generate the U-Boot boot script.
+
 config BR2_PACKAGE_UBOOT_VENDOR_OMAP_IFT
 	bool "produce a .ift signed image (OMAP)"
 	depends on BR2_PACKAGE_UBOOT_VENDOR_FORMAT_BIN
