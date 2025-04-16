@@ -1,0 +1,23 @@
+From 4b9c7851f6ac8f1406717f70c0f3955d9aabe0bc Mon Sep 17 00:00:00 2001
+From: Gunjan Gupta <gunjan@wesion.com>
+Date: Tue, 15 Apr 2025 15:10:18 +0000
+Subject: [PATCH 3/6] fix compilation failure
+
+Signed-off-by: Gunjan Gupta <gunjan@wesion.com>
+---
+ arch/arm/mach-rockchip/decode_bl31.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-rockchip/decode_bl31.py b/arch/arm/mach-rockchip/decode_bl31.py
+index 42fa32d..1cff8c3 100755
+--- a/arch/arm/mach-rockchip/decode_bl31.py
++++ b/arch/arm/mach-rockchip/decode_bl31.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2
++#!/usr/bin/env python3
+ #
+ # Copyright (C) 2020 Rockchip Electronics Co., Ltd
+ #
+-- 
+2.47.2
+
