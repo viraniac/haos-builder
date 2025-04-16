@@ -1,7 +1,7 @@
-From 9105d464b8f8989eb908ec611788ef5882d7ad29 Mon Sep 17 00:00:00 2001
+From 4b9c7851f6ac8f1406717f70c0f3955d9aabe0bc Mon Sep 17 00:00:00 2001
 From: Gunjan Gupta <gunjan@wesion.com>
 Date: Tue, 15 Apr 2025 15:10:18 +0000
-Subject: [PATCH 3/3] fix compilation failure
+Subject: [PATCH 3/6] fix compilation failure
 
 Signed-off-by: Gunjan Gupta <gunjan@wesion.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Gunjan Gupta <gunjan@wesion.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/mach-rockchip/decode_bl31.py b/arch/arm/mach-rockchip/decode_bl31.py
-index 42fa32d23d..1cff8c3a41 100755
+index 42fa32d..1cff8c3 100755
 --- a/arch/arm/mach-rockchip/decode_bl31.py
 +++ b/arch/arm/mach-rockchip/decode_bl31.py
 @@ -1,4 +1,4 @@

@@ -1,0 +1,116 @@
+From 9ca44906a3c5b6e5e2433cce21f5565a7359258b Mon Sep 17 00:00:00 2001
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Mon, 26 Feb 2018 23:17:59 +0200
+Subject: [PATCH 4/6] cmd: part: Allow passing partition name to start and size
+
+Allow passing the partition name to "part start" and "part size"
+commands, so we can avoid magic numbers in the environment.
+
+Consider one real use-case: in include/environment/ti/boot.h we have
+commands like these:
+
+    setenv boot_part 9
+    part start mmc ${mmcdev} ${boot_part} boot_start
+    part size mmc ${mmcdev} ${boot_part} boot_size
+    mmc read ${loadaddr} ${boot_start} ${boot_size}
+
+Now suppose that we have changed the partition table and boot_part now
+is 10. We will need to fix commands above. And anyone who relies on
+these boot commands, will need to change them accordingly, too (this was
+an actual case in our lab while testing Linux boot on Android
+environment).
+
+By providing the option to pass partition name instead, we fix mentioned
+issue, by eliminating the necessity to use magic numbers.
+
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+Reviewed-by: Lukasz Majewski <lukma@denx.de>
+---
+ cmd/part.c | 36 +++++++++++++++++++++++++-----------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
+
+diff --git a/cmd/part.c b/cmd/part.c
+index 834f942..1d9a402 100644
+--- a/cmd/part.c
++++ b/cmd/part.c
+@@ -113,6 +113,7 @@ static int do_part_start(int argc, char * const argv[])
+ 	struct blk_desc *desc;
+ 	disk_partition_t info;
+ 	char buf[512] = { 0 };
++	char *endp;
+ 	int part;
+ 	int err;
+ 	int ret;
+@@ -122,15 +123,20 @@ static int do_part_start(int argc, char * const argv[])
+ 	if (argc > 4)
+ 		return CMD_RET_USAGE;
+ 
+-	part = simple_strtoul(argv[2], NULL, 0);
+-
+ 	ret = blk_get_device_by_str(argv[0], argv[1], &desc);
+ 	if (ret < 0)
+ 		return 1;
+ 
+-	err = part_get_info(desc, part, &info);
+-	if (err)
+-		return 1;
++	part = simple_strtoul(argv[2], &endp, 0);
++	if (*endp == '\0') {
++		err = part_get_info(desc, part, &info);
++		if (err)
++			return 1;
++	} else {
++		part = part_get_info_by_name(desc, argv[2], &info);
++		if (part == -1)
++			return 1;
++	}
+ 
+ 	snprintf(buf, sizeof(buf), LBAF, info.start);
+ 
+@@ -147,6 +153,7 @@ static int do_part_size(int argc, char * const argv[])
+ 	struct blk_desc *desc;
+ 	disk_partition_t info;
+ 	char buf[512] = { 0 };
++	char *endp;
+ 	int part;
+ 	int err;
+ 	int ret;
+@@ -156,15 +163,20 @@ static int do_part_size(int argc, char * const argv[])
+ 	if (argc > 4)
+ 		return CMD_RET_USAGE;
+ 
+-	part = simple_strtoul(argv[2], NULL, 0);
+-
+ 	ret = blk_get_device_by_str(argv[0], argv[1], &desc);
+ 	if (ret < 0)
+ 		return 1;
+ 
+-	err = part_get_info(desc, part, &info);
+-	if (err)
+-		return 1;
++	part = simple_strtoul(argv[2], &endp, 0);
++	if (*endp == '\0') {
++		err = part_get_info(desc, part, &info);
++		if (err)
++			return 1;
++	} else {
++		part = part_get_info_by_name(desc, argv[2], &info);
++		if (part == -1)
++			return 1;
++	}
+ 
+ 	snprintf(buf, sizeof(buf), LBAF, info.size);
+ 
+@@ -207,6 +219,8 @@ U_BOOT_CMD(
+ 	"      flags can be -bootable (list only bootable partitions)\n"
+ 	"part start <interface> <dev> <part> <varname>\n"
+ 	"    - set environment variable to the start of the partition (in blocks)\n"
++	"      part can be either partition number or partition name\n"
+ 	"part size <interface> <dev> <part> <varname>\n"
+-	"    - set environment variable to the size of the partition (in blocks)"
++	"    - set environment variable to the size of the partition (in blocks)\n"
++	"      part can be either partition number or partition name"
+ );
+-- 
+2.47.2
+

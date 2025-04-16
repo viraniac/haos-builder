@@ -1,7 +1,7 @@
-From 2cb544a30895a2f56f67fc0e93d7a831e2fd816b Mon Sep 17 00:00:00 2001
+From a4837d898d7856b72639ea4333cc6c0a94af10bd Mon Sep 17 00:00:00 2001
 From: Muhammed Efe Cetin <efectn@protonmail.com>
 Date: Thu, 13 Jun 2024 16:46:31 +0300
-Subject: [PATCH 2/3] fix tee.bin not found error
+Subject: [PATCH 2/6] fix tee.bin not found error
 
 ---
  arch/arm/mach-rockchip/decode_bl31.py  | 12 +++++++++++-
@@ -10,7 +10,7 @@ Subject: [PATCH 2/3] fix tee.bin not found error
  3 files changed, 25 insertions(+), 10 deletions(-)
 
 diff --git a/arch/arm/mach-rockchip/decode_bl31.py b/arch/arm/mach-rockchip/decode_bl31.py
-index 301bd15375..42fa32d23d 100755
+index 301bd15..42fa32d 100755
 --- a/arch/arm/mach-rockchip/decode_bl31.py
 +++ b/arch/arm/mach-rockchip/decode_bl31.py
 @@ -41,7 +41,17 @@ def generate_atf_binary(bl31_file_name):
@@ -33,7 +33,7 @@ index 301bd15375..42fa32d23d 100755
  
  if __name__ == "__main__":
 diff --git a/arch/arm/mach-rockchip/fit_nodes.sh b/arch/arm/mach-rockchip/fit_nodes.sh
-index 993728b9b8..e23e2d4d94 100755
+index 993728b..e23e2d4 100755
 --- a/arch/arm/mach-rockchip/fit_nodes.sh
 +++ b/arch/arm/mach-rockchip/fit_nodes.sh
 @@ -180,16 +180,10 @@ function gen_bl32_node()
@@ -64,7 +64,7 @@ index 993728b9b8..e23e2d4d94 100755
  
  function gen_mcu_node()
 diff --git a/arch/arm/mach-rockchip/make_fit_atf.py b/arch/arm/mach-rockchip/make_fit_atf.py
-index 27b6ef7597..fac8d6f121 100755
+index 27b6ef7..fac8d6f 100755
 --- a/arch/arm/mach-rockchip/make_fit_atf.py
 +++ b/arch/arm/mach-rockchip/make_fit_atf.py
 @@ -212,9 +212,20 @@ def get_bl31_segments_info(bl31_file_name):
