@@ -1,0 +1,41 @@
+From 0a1b89783af898b48c5b44234b5fba8164030012 Mon Sep 17 00:00:00 2001
+From: Muhammed Efe Cetin <efectn@protonmail.com>
+Date: Wed, 6 Mar 2024 00:09:58 +0300
+Subject: [PATCH 40/47] mfd: khadas-mcu: drop unused code
+
+---
+ drivers/mfd/khadas-mcu.c | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/drivers/mfd/khadas-mcu.c b/drivers/mfd/khadas-mcu.c
+index 07028f92aa27..75cd23e3a17e 100644
+--- a/drivers/mfd/khadas-mcu.c
++++ b/drivers/mfd/khadas-mcu.c
+@@ -84,10 +84,6 @@ static struct mfd_cell khadas_mcu_fan_cells[] = {
+ 	{ .name = "khadas-mcu-fan-ctrl", },
+ };
+ 
+-static struct mfd_cell khadas_mcu_cells[] = {
+-	{ .name = "khadas-mcu-user-mem", },
+-};
+-
+ static int khadas_mcu_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+@@ -109,13 +105,6 @@ static int khadas_mcu_probe(struct i2c_client *client)
+ 		return ret;
+ 	}
+ 
+-	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
+-				   khadas_mcu_cells,
+-				   ARRAY_SIZE(khadas_mcu_cells),
+-				   NULL, 0, NULL);
+-	if (ret)
+-		return ret;
+-
+ 	if (of_property_present(dev->of_node, "#cooling-cells"))
+ 		return devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
+ 					    khadas_mcu_fan_cells,
+-- 
+2.47.2
+

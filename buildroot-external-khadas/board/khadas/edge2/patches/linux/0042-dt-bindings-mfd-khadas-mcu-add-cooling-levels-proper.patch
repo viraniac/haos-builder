@@ -1,0 +1,38 @@
+From cc5064177488140caf4798d129f24b1ad0816069 Mon Sep 17 00:00:00 2001
+From: Muhammed Efe Cetin <efectn@protonmail.com>
+Date: Wed, 6 Mar 2024 00:14:58 +0300
+Subject: [PATCH 42/47] dt-bindings: mfd: khadas-mcu: add cooling-levels
+ property
+
+---
+ Documentation/devicetree/bindings/mfd/khadas,mcu.yaml | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml b/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml
+index 084960fd5a1f..cf46b690010f 100644
+--- a/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml
++++ b/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml
+@@ -11,7 +11,7 @@ maintainers:
+ 
+ description: |
+   Khadas embeds a microcontroller on their VIM and Edge boards adding some
+-  system feature as PWM Fan control (for VIM2 rev14 or VIM3), User memory
++  system feature as PWM Fan control (for VIM2 rev14, VIM3, Edge2), User memory
+   storage, IR/Key resume control, system power LED control and more.
+ 
+ properties:
+@@ -22,6 +22,11 @@ properties:
+   "#cooling-cells": # Only needed for boards having FAN control feature
+     const: 2
+ 
++  cooling-levels:
++    description: Max speed of PWM fan. This property is necessary for Khadas Edge 2.
++    items:
++      maximum: 100
++
+   reg:
+     maxItems: 1
+ 
+-- 
+2.47.2
+

@@ -1,0 +1,30 @@
+From 747ba903f9950799e1107974fce7bd02503ae71c Mon Sep 17 00:00:00 2001
+From: Muhammed Efe Cetin <efectn@protonmail.com>
+Date: Wed, 6 Mar 2024 00:17:58 +0300
+Subject: [PATCH 43/47] arm64: dts: rockchip: Add MCU to Khadas Edge 2
+
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dts b/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dts
+index 800ac0ae0749..873ef46903af 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dts
+@@ -306,6 +306,13 @@ hym8563: rtc@51 {
+ 		clock-output-names = "hym8563";
+ 		wakeup-source;
+ 	};
++
++	khadas_mcu: system-controller@18 {
++		compatible = "khadas,mcu";
++		reg = <0x18>;
++		cooling-levels = <0 50 72 100>;
++		#cooling-cells = <2>;
++	};
+ };
+ 
+ &pinctrl {
+-- 
+2.47.2
+

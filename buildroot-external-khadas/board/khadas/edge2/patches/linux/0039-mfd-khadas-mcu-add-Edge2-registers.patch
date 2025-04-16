@@ -1,0 +1,114 @@
+From d787d0bbc676a8d884ea31e3f65ccb5c3590fcd0 Mon Sep 17 00:00:00 2001
+From: Muhammed Efe Cetin <efectn@protonmail.com>
+Date: Wed, 6 Mar 2024 00:09:25 +0300
+Subject: [PATCH 39/47] mfd: khadas-mcu: add Edge2 registers
+
+---
+ drivers/mfd/khadas-mcu.c       |  8 ++++++--
+ include/linux/mfd/khadas-mcu.h | 24 ++++++++++++++++++++++++
+ 2 files changed, 30 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mfd/khadas-mcu.c b/drivers/mfd/khadas-mcu.c
+index ba981a788692..07028f92aa27 100644
+--- a/drivers/mfd/khadas-mcu.c
++++ b/drivers/mfd/khadas-mcu.c
+@@ -26,6 +26,10 @@ static bool khadas_mcu_reg_volatile(struct device *dev, unsigned int reg)
+ 	case KHADAS_MCU_CHECK_USER_PASSWD_REG:
+ 	case KHADAS_MCU_WOL_INIT_START_REG:
+ 	case KHADAS_MCU_CMD_FAN_STATUS_CTRL_REG:
++	case KHADAS_MCU_LED_ON_RAM_REG:
++	case KHADAS_MCU_CMD_FAN_STATUS_CTRL_REG_V2:
++	case KHADAS_MCU_WDT_EN_REG:
++	case KHADAS_MCU_SYS_RST_REG:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -69,14 +73,14 @@ static const struct regmap_config khadas_mcu_regmap_config = {
+ 	.reg_bits	= 8,
+ 	.reg_stride	= 1,
+ 	.val_bits	= 8,
+-	.max_register	= KHADAS_MCU_CMD_FAN_STATUS_CTRL_REG,
++	.max_register	= KHADAS_MCU_SYS_RST_REG,
+ 	.volatile_reg	= khadas_mcu_reg_volatile,
+ 	.writeable_reg	= khadas_mcu_reg_writeable,
+ 	.cache_type	= REGCACHE_MAPLE,
+ };
+ 
+ static struct mfd_cell khadas_mcu_fan_cells[] = {
+-	/* VIM1/2 Rev13+ and VIM3 only */
++	/* VIM1/2 Rev13+, VIM3 and Edge2 only */
+ 	{ .name = "khadas-mcu-fan-ctrl", },
+ };
+ 
+diff --git a/include/linux/mfd/khadas-mcu.h b/include/linux/mfd/khadas-mcu.h
+index a99ba2ed0e4e..63bc9bf76661 100644
+--- a/include/linux/mfd/khadas-mcu.h
++++ b/include/linux/mfd/khadas-mcu.h
+@@ -35,26 +35,45 @@
+ #define KHADAS_MCU_FACTORY_TEST_REG		0x16 /* R */
+ #define KHADAS_MCU_BOOT_MODE_REG		0x20 /* RW */
+ #define KHADAS_MCU_BOOT_EN_WOL_REG		0x21 /* RW */
++#define KHADAS_MCU_BOOT_EN_DCIN_REG_V2		0x21 /* RW */
+ #define KHADAS_MCU_BOOT_EN_RTC_REG		0x22 /* RW */
+ #define KHADAS_MCU_BOOT_EN_EXP_REG		0x23 /* RW */
++#define KHADAS_MCU_LED_MODE_ON_REG_V2		0x23 /* RW */
++#define KHADAS_MCU_LED_MODE_OFF_REG_V2		0x24 /* RW */
+ #define KHADAS_MCU_BOOT_EN_IR_REG		0x24 /* RW */
+ #define KHADAS_MCU_BOOT_EN_DCIN_REG		0x25 /* RW */
++#define KHADAS_MCU_RGB_ON_R_REG			0x25 /* RW */
++#define KHADAS_MCU_RGB_ON_G_REG			0x26 /* RW */
+ #define KHADAS_MCU_BOOT_EN_KEY_REG		0x26 /* RW */
++#define KHADAS_MCU_RGB_ON_B_REG			0x27 /* RW */
+ #define KHADAS_MCU_KEY_MODE_REG			0x27 /* RW */
++#define KHADAS_MCU_RGB_OFF_R_REG		0x28 /* RW */
+ #define KHADAS_MCU_LED_MODE_ON_REG		0x28 /* RW */
++#define KHADAS_MCU_RGB_OFF_G_REG		0x29 /* RW */
+ #define KHADAS_MCU_LED_MODE_OFF_REG		0x29 /* RW */
++#define KHADAS_MCU_RGB_OFF_B_REG		0x2a /* RW */
+ #define KHADAS_MCU_SHUTDOWN_NORMAL_REG		0x2c /* RW */
+ #define KHADAS_MCU_MAC_SWITCH_REG		0x2d /* RW */
++#define KHADAS_MCU_REST_CONF_REG		0x2e /* RW */
+ #define KHADAS_MCU_MCU_SLEEP_MODE_REG		0x2e /* RW */
++#define KHADAS_MCU_BOOT_EN_IR_REG_V2		0x2f /* RW */
+ #define KHADAS_MCU_IR_CODE1_0_REG		0x2f /* RW */
+ #define KHADAS_MCU_IR_CODE1_1_REG		0x30 /* RW */
++#define KHADAS_MCU_IR1_CUST1_REG		0x30 /* RW */
+ #define KHADAS_MCU_IR_CODE1_2_REG		0x31 /* RW */
++#define KHADAS_MCU_IR1_CUST2_REG		0x31 /* RW */
+ #define KHADAS_MCU_IR_CODE1_3_REG		0x32 /* RW */
++#define KHADAS_MCU_IR1_ORDER1_REG		0x32 /* RW */
+ #define KHADAS_MCU_USB_PCIE_SWITCH_REG		0x33 /* RW */
++#define KHADAS_MCU_IR1_ORDER2_REG		0x33 /* RW */
++#define KHADAS_MCU_IR2_CUST1_REG		0x34 /* RW */
+ #define KHADAS_MCU_IR_CODE2_0_REG		0x34 /* RW */
+ #define KHADAS_MCU_IR_CODE2_1_REG		0x35 /* RW */
++#define KHADAS_MCU_IR2_CUST2_REG		0x35 /* RW */
+ #define KHADAS_MCU_IR_CODE2_2_REG		0x36 /* RW */
++#define KHADAS_MCU_IR2_ORDER1_REG		0x36 /* RW */
+ #define KHADAS_MCU_IR_CODE2_3_REG		0x37 /* RW */
++#define KHADAS_MCU_IR2_ORDER2_REG		0x36 /* RW */
+ #define KHADAS_MCU_PASSWD_USER_0_REG		0x40 /* RW */
+ #define KHADAS_MCU_PASSWD_USER_1_REG		0x41 /* RW */
+ #define KHADAS_MCU_PASSWD_USER_2_REG		0x42 /* RW */
+@@ -69,6 +88,10 @@
+ #define KHADAS_MCU_SHUTDOWN_NORMAL_STATUS_REG	0x86 /* RO */
+ #define KHADAS_MCU_WOL_INIT_START_REG		0x87 /* WO */
+ #define KHADAS_MCU_CMD_FAN_STATUS_CTRL_REG	0x88 /* WO */
++#define KHADAS_MCU_LED_ON_RAM_REG		0x89 /* WO */
++#define KHADAS_MCU_CMD_FAN_STATUS_CTRL_REG_V2	0x8A /* WO */
++#define KHADAS_MCU_WDT_EN_REG			0x8B /* WO */
++#define KHADAS_MCU_SYS_RST_REG			0x91 /* WO */
+ 
+ enum {
+ 	KHADAS_BOARD_VIM1 = 0x1,
+@@ -76,6 +99,7 @@ enum {
+ 	KHADAS_BOARD_VIM3,
+ 	KHADAS_BOARD_EDGE = 0x11,
+ 	KHADAS_BOARD_EDGE_V,
++	KHADAS_BOARD_EDGE2,
+ };
+ 
+ /**
+-- 
+2.47.2
+
