@@ -136,6 +136,13 @@ config BR2_PACKAGE_UBOOT_VENDOR_CONFIG_FRAGMENT_FILES
 	  that will be merged to the main U-Boot configuration file.
 endif
 
+config BR2_PACKAGE_UBOOT_VENDOR_KCONFIG_DOTCONFIG
+	string "Kconfig configuration file name"
+	default ".config"
+
+config BR2_PACKAGE_UBOOT_VENDOR_AMLOGIC
+	bool "Build U-Boot for Amlogic 2019.01 vendor kernel"
+
 config BR2_PACKAGE_UBOOT_VENDOR_NEEDS_DTC
 	bool "U-Boot needs dtc"
 	select BR2_PACKAGE_HOST_DTC

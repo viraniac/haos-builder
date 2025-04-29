@@ -7,6 +7,8 @@
 UBOOT_VENDOR_VERSION = $(call qstrip,$(BR2_PACKAGE_UBOOT_VENDOR_VERSION))
 UBOOT_VENDOR_BOARD_NAME = $(call qstrip,$(BR2_PACKAGE_UBOOT_VENDOR_BOARDNAME))
 
+UBOOT_VENDOR_KCONFIG_DOTCONFIG = $(call qstrip,$(BR2_PACKAGE_UBOOT_VENDOR_KCONFIG_DOTCONFIG))
+
 UBOOT_VENDOR_LICENSE = GPL-2.0+
 ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_LATEST_VERSION),y)
 UBOOT_VENDOR_LICENSE_FILES = Licenses/gpl-2.0.txt
@@ -64,8 +66,9 @@ ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_FORMAT_REMAKE_ELF),y)
 UBOOT_VENDOR_BINS += u-boot.elf
 endif
 
-# Call 'make all' unconditionally
+ifneq ($(BR2_PACKAGE_UBOOT_VENDOR_AMLOGIC),y)
 UBOOT_VENDOR_MAKE_TARGET += all
+endif
 
 ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_FORMAT_KWB),y)
 UBOOT_VENDOR_BINS += u-boot.kwb
@@ -279,10 +282,26 @@ ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_NEEDS_XXD),y)
 UBOOT_VENDOR_DEPENDENCIES += host-vim
 endif
 
+ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_AMLOGIC),y)
+UBOOT_VENDOR_DEPENDENCIES += host-gcc-linaro-aarch64-elf host-gcc-riscv-none-embed
+UBOOT_VENDOR_PATH_EXTRA = $(HOST_DIR)/bin:$(HOST_DIR)/opt/gcc-linaro-aarch64-elf/bin:$(HOST_DIR)/opt/gcc-riscv-none-embed/bin
+UBOOT_VENDOR_BUILD_DIR_PREFIX = build/
+define UBOOT_VENDOR_BUILD_CMDS_AMLOGIC
+	$(TARGET_CONFIGURE_OPTS) \
+		$(UBOOT_VENDOR_MAKE) -C $(@D) $(UBOOT_VENDOR_MAKE_OPTS) \
+		savedefconfig
+	find $(@D) -name $(BR2_PACKAGE_UBOOT_VENDOR_BOARD_DEFCONFIG)_defconfig -exec cp $(@D)/build/defconfig {} \; 
+	/bin/bash -ec "cd $(@D); \
+		export CROSS_COMPILE=aarch64-elf-; \
+		export PATH=$$PATH:$(UBOOT_VENDOR_PATH_EXTRA); \
+		fip/mk_script.sh $(BR2_PACKAGE_UBOOT_VENDOR_BOARD_DEFCONFIG) $(@D)"
+endef
+endif
+
 ifeq ($(BR2_PACKAGE_UBOOT_VENDOR_TOOLS_FWPRINTENV),y)
 UBOOT_VENDOR_MAKE_TARGET += envtools
 define UBOOT_TOOLS_INSTALL_FWPRINTENV
-	$(INSTALL) -m 0755 -D $(@D)/tools/env/fw_printenv $(TARGET_DIR)/usr/sbin/fw_printenv
+	$(INSTALL) -m 0755 -D $(@D)/$(UBOOT_VENDOR_BUILD_DIR_PREFIX)tools/env/fw_printenv $(TARGET_DIR)/usr/sbin/fw_printenv
 	ln -sf fw_printenv $(TARGET_DIR)/usr/sbin/fw_setenv
 endef
 endif
@@ -396,6 +415,7 @@ define UBOOT_VENDOR_BUILD_CMDS
 	$(if $(UBOOT_VENDOR_CUSTOM_DTS_PATH),
 		cp -f $(UBOOT_VENDOR_CUSTOM_DTS_PATH) $(@D)/arch/$(UBOOT_VENDOR_ARCH)/dts/
 	)
+	$(UBOOT_VENDOR_BUILD_CMDS_AMLOGIC)
 	$(TARGET_CONFIGURE_OPTS) \
 		PKG_CONFIG="$(PKG_CONFIG_HOST_BINARY)" \
 		PKG_CONFIG_SYSROOT_DIR="/" \
@@ -418,7 +438,7 @@ define UBOOT_VENDOR_BUILD_CMDS
 			-T rksd -d $(UBOOT_VENDOR_DDR_BLOB):$(@D)/spl/u-boot-spl.bin \
 			 $(@D)/idbloader.img)
 	$(if $(BR2_PACKAGE_UBOOT_VENDOR_GENERATE_BOOT_SCRIPT),
-		$(@D)/tools/mkimage -C none -A $(MKIMAGE_ARCH) -T script \
+		$(@D)/$(UBOOT_VENDOR_BUILD_DIR_PREFIX)tools/mkimage -C none -A $(MKIMAGE_ARCH) -T script \
 			-d $(call qstrip,$(BR2_PACKAGE_UBOOT_VENDOR_BOOT_SCRIPT_SOURCE)) \
 			$(@D)/tools/boot.scr)
 endef
