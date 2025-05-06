@@ -1,0 +1,10 @@
+#-------------------------------------------------------------------------------
+# Amlogic Common Drivers
+config BR2_LINUX_KERNEL_EXT_COMMON_DRIVERS
+	bool "Amlogic common drivers"
+	depends on !BR2_LINUX_KERNEL_LATEST_VERSION
+	depends on !BR2_LINUX_KERNEL_LATEST_CIP_VERSION
+	depends on !BR2_LINUX_KERNEL_LATEST_CIP_RT_VERSION
+	select BR2_PACKAGE_COMMON_DRIVERS
+	help
+	  Amlogic common drivers.
