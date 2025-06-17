@@ -1,0 +1,61 @@
+From 0784f68daa34b5165ee072ccad90a34681c7def0 Mon Sep 17 00:00:00 2001
+From: Gunjan Gupta <gunjan@wesion.com>
+Date: Mon, 16 Jun 2025 13:24:12 +0000
+Subject: [PATCH] fix fdtfile path
+
+Signed-off-by: Gunjan Gupta <gunjan@wesion.com>
+---
+ board/khadas/configs/kvim4.h | 10 +++++-----
+ board/khadas/kvim4/kvim4.c   |  4 ++--
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/board/khadas/configs/kvim4.h b/board/khadas/configs/kvim4.h
+index 4e8ddd16..fe9eb1ac 100644
+--- a/board/khadas/configs/kvim4.h
++++ b/board/khadas/configs/kvim4.h
+@@ -71,11 +71,11 @@
+ #else
+ #define CONFIG_DTB_LOAD  "imgread dtb _aml_dtb ${dtb_mem_addr} || " \
+ 						 "if test ${boot_source} = emmc; then "\
+-							"echo Load dtb/${fdtfile} from eMMC (1:1) ...;" \
+-							"load mmc 1:1 ${dtb_mem_addr} dtb/${fdtfile};" \
++							"echo Load ${fdtfile} from eMMC (1:1) ...;" \
++							"load mmc 1:1 ${dtb_mem_addr} ${fdtfile};" \
+ 						 "else if test ${boot_source} = sd; then "\
+-							"echo Load dtb/${fdtfile} from SD (0:1) ...;" \
+-							"load mmc 0:1 ${dtb_mem_addr} dtb/${fdtfile};" \
++							"echo Load ${fdtfile} from SD (0:1) ...;" \
++							"load mmc 0:1 ${dtb_mem_addr} ${fdtfile};" \
+ 						 "fi;fi;"
+ #endif//#ifdef CONFIG_DTB_BIND_KERNEL    //load dtb from kernel, such as boot partition
+ 
+@@ -155,7 +155,7 @@
+         "kernel_comp_size=0x2000000\0"\
+         "pxeuuid=00000000-0000-0000-0000-000000000000\0"\
+         "bootfile=\0"\
+-        "fdtfile=amlogic/" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
++        "fdtfile=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
+         CONFIG_EXTRA_ENV_SETTINGS_BASE \
+         "silent=1\0"\
+         "loadaddr_kernel=0x01080000\0"\
+diff --git a/board/khadas/kvim4/kvim4.c b/board/khadas/kvim4/kvim4.c
+index c0625c65..4fad15d3 100644
+--- a/board/khadas/kvim4/kvim4.c
++++ b/board/khadas/kvim4/kvim4.c
+@@ -156,11 +156,11 @@ static void select_fdtfile(void)
+ 
+ 	if (cpu_id.chip_rev == 0xA || cpu_id.chip_rev == 0xb) {
+ 		env_set("chip_recv", "b");
+-		env_set("fdtfile", "amlogic/" CONFIG_DEFAULT_DEVICE_TREE".dtb");
++		env_set("fdtfile", CONFIG_DEFAULT_DEVICE_TREE".dtb");
+ 
+ 	} else if (cpu_id.chip_rev == 0xC) {
+ 		env_set("chip_recv", "c");
+-		env_set("fdtfile", "amlogic/" CONFIG_DEFAULT_DEVICE_TREE"n.dtb");
++		env_set("fdtfile", CONFIG_DEFAULT_DEVICE_TREE"n.dtb");
+ 	}
+ }
+ 
+-- 
+2.49.0
+

@@ -38,13 +38,28 @@ fi
 fileenv ${devtype} ${devnum}:1 ${ramdisk_addr_r} cmdline.txt cmdline
 
 # Load device tree
-setenv fdtfile "meson-g12b-s922x-khadas-vim3.dtb"
 echo "Loading standard device tree ${fdtfile}"
 fatload ${devtype} ${devnum}:1 ${fdt_addr_r} ${fdtfile}
 fdt addr ${fdt_addr_r}
 
-# load dt overlays
+# Set lcd nodes
 fdt resize 65536
+
+if test "${mipi_lcd_exist}" = "0"; then
+        fdt set /lcd status disabled
+        fdt set /lcd1 status disabled
+        fdt set /lcd2 status disabled
+        fdt set /soc/apb4@fe000000/i2c@6c000/gt9xx@14 status disabled
+        fdt set /soc/apb4@fe000000/i2c@6c000/ft5336@38 status disabled
+else
+	if test "${panel_type}" = "mipi_1"; then
+                fdt set /drm-subsystem fbdev_sizes <1920 1200 1920 2400 32>
+        else
+                fdt set /drm-subsystem fbdev_sizes <1080 1920 1080 3840 32>
+        fi
+fi
+
+# load dt overlays
 for overlay_file in ${overlays}; do
   if fatload ${devtype} ${devnum}:1 ${ramdisk_addr_r} overlays/${overlay_file}.dtbo; then
     echo "Applying kernel provided DT overlay ${overlay_file}.dtbo"
@@ -66,16 +81,17 @@ fi
 # 7. KernelB
 # 8. SystemB
 # 9. BootInfo
-setenv bootargs
+setenv bootargs_required
+
 for BOOT_SLOT in "${BOOT_ORDER}"; do
-  if test "x${bootargs}" != "x"; then
+  if test "x${bootargs_required}" != "x"; then
     # skip remaining slots
   elif test "x${BOOT_SLOT}" = "xA"; then
     if test ${BOOT_A_LEFT} -gt 0; then
       setexpr BOOT_A_LEFT ${BOOT_A_LEFT} - 1
       echo "Trying to boot slot A, ${BOOT_A_LEFT} attempts remaining. Loading kernel ..."
       if load ${devtype} ${devnum}:5 ${kernel_addr_r} Image; then
-          setenv bootargs "${bootargs_hassos} ${bootargs_a} rauc.slot=A ${cmdline}"
+          setenv bootargs_required "${bootargs_hassos} ${bootargs_a} rauc.slot=A ${cmdline}"
       fi
     fi
   elif test "x${BOOT_SLOT}" = "xB"; then
@@ -83,13 +99,13 @@ for BOOT_SLOT in "${BOOT_ORDER}"; do
       setexpr BOOT_B_LEFT ${BOOT_B_LEFT} - 1
       echo "Trying to boot slot B, ${BOOT_B_LEFT} attempts remaining. Loading kernel ..."
       if load ${devtype} ${devnum}:7 ${kernel_addr_r} Image; then
-          setenv bootargs "${bootargs_hassos} ${bootargs_b} rauc.slot=B ${cmdline}"
+          setenv bootargs_required "${bootargs_hassos} ${bootargs_b} rauc.slot=B ${cmdline}"
       fi
     fi
   fi
 done
 
-if test -n "${bootargs}"; then
+if test -n "${bootargs_required}"; then
   run storebootstate
 else
   echo "No valid slot found, resetting tries to 3"
@@ -98,6 +114,10 @@ else
   run storebootstate
   reset
 fi
+
+setexpr bootargs sub "rootflags=\\S* rw rootfstype=\\S* " "" "${bootargs}"
+
+setenv bootargs "${bootargs} ${bootargs_required}"
 
 printenv bootargs
 echo "Starting kernel"
