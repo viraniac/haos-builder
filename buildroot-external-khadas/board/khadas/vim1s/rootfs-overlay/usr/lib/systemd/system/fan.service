@@ -1,0 +1,14 @@
+[Unit]
+Description=FAN control
+DefaultDependencies=no
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "/bin/echo 1 > /sys/class/fan/mode"
+ExecStart=/bin/sh -c "/bin/echo 1 > /sys/class/fan/enable"
+ExecStop=/bin/sh -c "/bin/echo 0 > /sys/class/fan/enable"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
