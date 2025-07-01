@@ -1,0 +1,2 @@
+name: SBC
+desc: Customization for boards not supported in HassOS Buildroot tree

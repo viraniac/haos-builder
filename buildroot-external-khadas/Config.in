@@ -1,5 +1,0 @@
-source "$BR2_EXTERNAL_KHADAS_PATH/package/khadas-uboot/Config.in"
-source "$BR2_EXTERNAL_KHADAS_PATH/package/khadas-firmware/Config.in"
-source "$BR2_EXTERNAL_KHADAS_PATH/package/rockchip-rkbin-custom/Config.in"
-source "$BR2_EXTERNAL_KHADAS_PATH/package/uboot-vendor/Config.in"
-source "$BR2_EXTERNAL_KHADAS_PATH/package/common-drivers/Config.in"
