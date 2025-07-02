@@ -1,0 +1,33 @@
+From 8aad41c5d98a6036802ca8c56ced83a674c76074 Mon Sep 17 00:00:00 2001
+From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Date: Mon, 1 Aug 2022 15:17:49 +0200
+Subject: [PATCH] cmd: inconsistent return type of command_process()
+
+The declarations in the header and in the implementation must match.
+
+Reported-by: Sergei Antonov <saproj@gmail.com>
+Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+---
+ include/command.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/command.h b/include/command.h
+index 681084b9ea..dbe6a7b5db 100644
+--- a/include/command.h
++++ b/include/command.h
+@@ -137,9 +137,9 @@ enum command_ret_t {
+  *			is left unchanged.
+  * @param ticks		If ticks is not null, this function set it to the
+  *			number of ticks the command took to complete.
+- * @return 0 if the command succeeded, 1 if it failed
++ * Return: 0 if command succeeded, else non-zero (CMD_RET_...)
+  */
+-int cmd_process(int flag, int argc, char * const argv[],
++enum command_ret_t cmd_process(int flag, int argc, char *const argv[],
+ 			       int *repeatable, unsigned long *ticks);
+ 
+ void fixup_cmdtable(cmd_tbl_t *cmdtp, int size);
+-- 
+2.47.2
+

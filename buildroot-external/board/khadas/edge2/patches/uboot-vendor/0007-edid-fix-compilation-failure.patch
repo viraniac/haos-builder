@@ -1,0 +1,26 @@
+From 47e4af8a5bf7133475319746dd520521f2b77a62 Mon Sep 17 00:00:00 2001
+From: buildozer <alpine-infra@lists.alpinelinux.org>
+Date: Wed, 2 Jul 2025 10:20:26 +0000
+Subject: [PATCH] edid: fix compilation failure
+
+Signed-off-by: buildozer <alpine-infra@lists.alpinelinux.org>
+---
+ common/edid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/common/edid.c b/common/edid.c
+index 092b85d744..2f4473678a 100644
+--- a/common/edid.c
++++ b/common/edid.c
+@@ -3588,7 +3588,7 @@ int add_cea_modes(struct hdmi_edid_data *data, struct edid *edid)
+ {
+ 	const u8 *cea = drm_find_cea_extension(edid);
+ 	const u8 *db, *hdmi = NULL, *video = NULL;
+-	u8 dbl, hdmi_len, video_len = 0;
++	u8 dbl, hdmi_len = 0, video_len = 0;
+ 	int modes = 0;
+ 
+ 	if (cea && cea_revision(cea) >= 3) {
+-- 
+2.47.2
+

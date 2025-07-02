@@ -1,4 +1,4 @@
-From 93ddda43441baefd98267c671ce2ec7e5527906b Mon Sep 17 00:00:00 2001
+From 9c478e669bd3648ea8fc58f8c85be034fdc6118a Mon Sep 17 00:00:00 2001
 From: Eric Dumazet <edumazet@google.com>
 Date: Wed, 28 Feb 2024 13:54:30 +0000
 Subject: [PATCH] ipv6: annotate data-races around cnf.forwarding
@@ -21,7 +21,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  7 files changed, 22 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index cd4083e0b3b9e..e13e4920ee9b2 100644
+index cd4083e0b3b9..e13e4920ee9b 100644
 --- a/drivers/net/usb/cdc_mbim.c
 +++ b/drivers/net/usb/cdc_mbim.c
 @@ -339,7 +339,7 @@ static void do_neigh_solicit(struct usbnet *dev, u8 *buf, u16 tci)
@@ -34,11 +34,11 @@ index cd4083e0b3b9e..e13e4920ee9b2 100644
  
  	/* ipv6_stub != NULL if in6_dev_get returned an inet6_dev */
 diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index c6932d1a3fa80..0185ca1617c1a 100644
+index 517bdae78614..3fc213800d76 100644
 --- a/include/net/ipv6.h
 +++ b/include/net/ipv6.h
-@@ -534,13 +534,15 @@ static inline int ipv6_hopopt_jumbo_remove(struct sk_buff *skb)
- 	return 0;
+@@ -500,13 +500,15 @@ static inline int ipv6_has_hopopt_jumbo(const struct sk_buff *skb)
+ 	return jhdr->nexthdr;
  }
  
 -static inline bool ipv6_accept_ra(struct inet6_dev *idev)
@@ -57,10 +57,10 @@ index c6932d1a3fa80..0185ca1617c1a 100644
  
  #define IPV6_FRAG_HIGH_THRESH	(4 * 1024*1024)	/* 4194304 */
 diff --git a/net/core/filter.c b/net/core/filter.c
-index 5881944f1681c..4288f45ff54ce 100644
+index dc89c3424718..e87495e8c5d4 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -6021,7 +6021,7 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+@@ -5898,7 +5898,7 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
  		return -ENODEV;
  
  	idev = __in6_dev_get_safely(dev);
@@ -70,7 +70,7 @@ index 5881944f1681c..4288f45ff54ce 100644
  
  	if (flags & BPF_FIB_LOOKUP_OUTPUT) {
 diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 8360939acf85a..12c0b1e85cea1 100644
+index 22e246ff910e..ea30f63d6678 100644
 --- a/net/ipv6/addrconf.c
 +++ b/net/ipv6/addrconf.c
 @@ -547,7 +547,8 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
@@ -112,10 +112,10 @@ index 8360939acf85a..12c0b1e85cea1 100644
  			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
  						     NETCONFA_FORWARDING,
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 2341a4373bb94..46c0dfa8c6f88 100644
+index fb26401950e7..531dae9df8da 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -508,7 +508,7 @@ int ip6_forward(struct sk_buff *skb)
+@@ -498,7 +498,7 @@ int ip6_forward(struct sk_buff *skb)
  	u32 mtu;
  
  	idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
@@ -125,10 +125,10 @@ index 2341a4373bb94..46c0dfa8c6f88 100644
  
  	if (skb->pkt_type != PACKET_HOST)
 diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 23b46b5705c53..bd73484de3818 100644
+index 8c5a99fe6803..ff2bcc37fa7b 100644
 --- a/net/ipv6/ndisc.c
 +++ b/net/ipv6/ndisc.c
-@@ -905,7 +905,7 @@ static enum skb_drop_reason ndisc_recv_ns(struct sk_buff *skb)
+@@ -906,7 +906,7 @@ static void ndisc_recv_ns(struct sk_buff *skb)
  		}
  
  		if (ipv6_chk_acast_addr(net, dev, &msg->target) ||
@@ -137,7 +137,7 @@ index 23b46b5705c53..bd73484de3818 100644
  		     (net->ipv6.devconf_all->proxy_ndp || idev->cnf.proxy_ndp) &&
  		     (is_router = pndisc_is_router(&msg->target, dev)) >= 0)) {
  			if (!(NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED) &&
-@@ -931,7 +931,7 @@ static enum skb_drop_reason ndisc_recv_ns(struct sk_buff *skb)
+@@ -930,7 +930,7 @@ static void ndisc_recv_ns(struct sk_buff *skb)
  	}
  
  	if (is_router < 0)
@@ -146,7 +146,7 @@ index 23b46b5705c53..bd73484de3818 100644
  
  	if (dad) {
  		ndisc_send_na(dev, &in6addr_linklocal_allnodes, &msg->target,
-@@ -1082,7 +1082,7 @@ static enum skb_drop_reason ndisc_recv_na(struct sk_buff *skb)
+@@ -1081,7 +1081,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
  	 * Note that we don't do a (daddr == all-routers-mcast) check.
  	 */
  	new_state = msg->icmph.icmp6_solicited ? NUD_REACHABLE : NUD_STALE;
@@ -155,7 +155,7 @@ index 23b46b5705c53..bd73484de3818 100644
  		if (accept_untracked_na(dev, saddr)) {
  			neigh = neigh_create(&nd_tbl, &msg->target, dev);
  			new_state = NUD_STALE;
-@@ -1102,7 +1102,8 @@ static enum skb_drop_reason ndisc_recv_na(struct sk_buff *skb)
+@@ -1101,7 +1101,8 @@ static void ndisc_recv_na(struct sk_buff *skb)
  		 * has already sent a NA to us.
  		 */
  		if (lladdr && !memcmp(lladdr, dev->dev_addr, dev->addr_len) &&
@@ -165,7 +165,7 @@ index 23b46b5705c53..bd73484de3818 100644
  		    pneigh_lookup(&nd_tbl, net, &msg->target, dev, 0)) {
  			/* XXX: idev->cnf.proxy_ndp */
  			goto out;
-@@ -1150,7 +1151,7 @@ static enum skb_drop_reason ndisc_recv_rs(struct sk_buff *skb)
+@@ -1147,7 +1148,7 @@ static void ndisc_recv_rs(struct sk_buff *skb)
  	}
  
  	/* Don't accept RS if we're not in router mode */
@@ -175,10 +175,10 @@ index 23b46b5705c53..bd73484de3818 100644
  
  	/*
 diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index fc5c534620253..4a0b12651777b 100644
+index 151414e9f7fe..124e1b3e7fbf 100644
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -2215,7 +2215,7 @@ struct rt6_info *ip6_pol_route(struct net *net, struct fib6_table *table,
+@@ -2217,7 +2217,7 @@ struct rt6_info *ip6_pol_route(struct net *net, struct fib6_table *table,
  
  	strict |= flags & RT6_LOOKUP_F_IFACE;
  	strict |= flags & RT6_LOOKUP_F_IGNORE_LINKSTATE;
@@ -187,7 +187,7 @@ index fc5c534620253..4a0b12651777b 100644
  		strict |= RT6_LOOKUP_F_REACHABLE;
  
  	rcu_read_lock();
-@@ -4146,7 +4146,7 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
+@@ -4147,7 +4147,7 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
  	in6_dev = __in6_dev_get(skb->dev);
  	if (!in6_dev)
  		return;
@@ -196,3 +196,6 @@ index fc5c534620253..4a0b12651777b 100644
  		return;
  
  	/* RFC2461 8.1:
+-- 
+2.47.2
+
